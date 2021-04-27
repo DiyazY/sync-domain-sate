@@ -1,25 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { initSignalRService } from "./signalR";
+import { QueryClient, QueryClientProvider } from "react-query";
+import Form from "./Form";
+
+const queryClient = new QueryClient();
 
 function App() {
+  const [isConnected, setIsConnected] = useState(false);
+  useEffect(() => {
+    initSignalRService().then((isConnected) => setIsConnected(isConnected));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!isConnected) return <p>Connecting...</p>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="App">
+        <header className="App-header">
+          <Form/>
+        </header>
+      </div>
+    </QueryClientProvider>
   );
 }
 
